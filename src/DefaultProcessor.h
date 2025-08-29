@@ -17,7 +17,7 @@ namespace cgm {
 		DefaultProcessor( std::function<void(decltype(*InputParser::ParserOutput{}.cbegin()))> f ) noexcept;
 		virtual ~DefaultProcessor() noexcept override = default;
 
-		virtual void process( InputParser::ParserOutput input, Catalog& catalog ) override;
+		virtual void process( InputParser::ParserOutput input, Catalog& catalog, std::ostream& output = std::cout ) override;
 
 		private:
 			std::function<void(decltype(*InputParser::ParserOutput{}.cbegin()))> _error_handler;

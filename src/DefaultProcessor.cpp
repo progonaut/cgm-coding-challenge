@@ -5,6 +5,7 @@
 #include "util.h"
 
 namespace cgm {
+
 namespace {
 	void processError( decltype( *InputParser::ParserOutput{ }.cbegin( ) )  error_token );
 }
@@ -16,7 +17,7 @@ DefaultProcessor::DefaultProcessor( ) noexcept
 DefaultProcessor::DefaultProcessor( std::function<void(decltype(*InputParser::ParserOutput{}.cbegin()) )> f ) noexcept
 : _error_handler{f}{ }
 
-void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalog ) {
+void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalog, std::ostream& output ) {
 	for( auto it = input.begin( ); it != input.end( ); ) {
 		auto const &token = *it;
 
@@ -35,9 +36,9 @@ void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalo
 
 				auto answers = catalog.getAnswersFor( Question{expect_question->second,{}} );
 				for( auto const &a : answers ) {
-					std::cout << "* " << a << "\n";
+					output << "* " << a << "\n";
 				}
-				std::cout << std::flush;
+				output << std::flush;
 
 				it = std::next( expect_question );
 			} break;
@@ -65,13 +66,14 @@ void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalo
 				  std::move( question_text ), std::move( answers ), Catalog::MergeOrReplace::Merge );
 #if defined( DEBUG )
 				if( cgm::verbose ) {
-					std::cout << ( newOrChanged == Catalog::NewOrChanged::New ? "Added " : "Modified " ) << "question '"
+					output << ( newOrChanged == Catalog::NewOrChanged::New ? "Added " : "Modified " ) << "question '"
 							  << pos->getQuestionText( ) << "'; " << nr << " new answers." << std::endl;
 				}
 #endif
 			} break;
 			default: {
 				throw std::runtime_error(
+
 				  util::buildString( "Illegal state with TYPE ", std::size_t(token.first) , "(", token.second, ")" ) );
 			} break;
 		}

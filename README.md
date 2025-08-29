@@ -178,7 +178,13 @@ With that said, the solution consists of
 I have chosen this approach because it would be a reasonable first draft architecture for a larger program in a similar
 domain.
 
+### Possible improvements and considerations
 
+* Instead of a bespoke `Question` class, a `std::map` in `Catalog` could suffice
+* Passable output streams instead of `cout` in objects
+* replace `std::pair` and similar with bespoke structs (clearer)
+* replace "test framework" with sensible library
+* reduce use of `std::string` and copies; `std::string_view`?
 
 Not everything is polished; nor necessarily bug-free.
 

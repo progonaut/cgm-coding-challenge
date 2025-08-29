@@ -31,7 +31,7 @@ class Test {
 	inline Test &expect( ) {
 		auto oldF = _f;
 
-		_f = [oldF, this]( ) -> std::pair<bool, std::string> {
+		_f = [oldF ]( ) -> std::pair<bool, std::string> {
 			try {
 				auto result = oldF( );
 				return {

@@ -27,7 +27,7 @@ Catalog::Catalog( std::size_t max_size ) noexcept : _max_length_of_contained_que
 std::tuple<typename Catalog::CatalogContainerType::const_iterator, Catalog::NewOrChanged, std::size_t>
 Catalog::addQuestion(
   std::string question_text, Question::AnswerSet &&answers, MergeOrReplace merge_or_replace, OnlyUnique unique ) {
-	return addQuestion( Question{ std::move(question_text), std::move(answers), MAX_LENGTH, false } );
+	return addQuestion( Question{ std::move(question_text), std::move(answers), _max_length_of_contained_questions, false }, merge_or_replace, unique );
 }
 
 std::tuple<typename Catalog::CatalogContainerType::const_iterator, Catalog::NewOrChanged, std::size_t>
@@ -40,19 +40,22 @@ Catalog::addQuestion(
 	bool is_new{ true };
 
 	if( existing_question != _questions.end( ) ) {
+
 		auto extracted_node = _questions.extract( existing_question );
 
 		if( merge_or_replace == MergeOrReplace::Merge ) {
 			nr_answers_before = extracted_node.value( ).getAnswers( ).size( );
 			std::swap( extracted_node.value( ).getAnswers( ), question.getAnswers());
 			mergeInto( question.getAnswers(), extracted_node.value( ).getAnswers( ), unique );
-		}
+		} 
+
 
 		// At the end of this scope, extracted_node is an owning handle to the question formerly in the catalog
 		// and the answers-parameter holds the merged data in insertion order
 		// semantically, this is considered an *update* rather than an insert of a new question
 
 		is_new = false;
+
 	}
 
 	auto [position, inserted] = _questions.insert( std::move(question) );
@@ -67,8 +70,8 @@ Catalog::addQuestion(
 	  position->getAnswers( ).size( ) - nr_answers_before );
 }
 
-Question::AnswerSet const &Catalog::getAnswersFor( std::string question_text ) const noexcept {
-	auto question = _questions.find( question_text );
+Question::AnswerSet const &Catalog::getAnswersFor( Question question_obj ) const noexcept {
+	auto question = _questions.find( question_obj );
 
 	if( question != _questions.end( ) ) {
 		return question->getAnswers( );

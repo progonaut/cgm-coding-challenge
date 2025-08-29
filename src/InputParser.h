@@ -40,7 +40,7 @@ namespace cgm {
 		Error
 	};
 		using ParserOutput = std::list<std::pair<ParserTokenType, std::string>>;
-		virtual ~InputParser() = 0;
+		virtual ~InputParser() noexcept = 0;
 
 		virtual ParserOutput parse( std::string line ) = 0;	
 	};

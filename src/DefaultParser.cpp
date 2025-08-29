@@ -15,6 +15,15 @@ namespace cgm {
 	}
 DefaultParser::~DefaultParser( ) noexcept {}
 
+
+
+/* The parser is a simple, hard-coded state machine
+ *
+ * It can
+ * * read multiple "statements" from one line
+ * * handle input errors
+ * * returns a list of parsed and typed, but not attributed, tokens
+ */
 InputParser::ParserOutput DefaultParser::parse( std::string line ) {
 	
 	if( line.length() == 0 ) return {};

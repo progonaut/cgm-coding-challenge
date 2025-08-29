@@ -7,13 +7,19 @@
  */
 
 #include"InputProcessor.h"
+#include"InputParser.h"
+
+#include<functional>
 namespace cgm {
 	class DefaultProcessor : public InputProcessor{
 		public:
-		DefaultProcessor();
-		virtual ~DefaultProcessor() override;
+		DefaultProcessor() noexcept;
+		DefaultProcessor( std::function<void(decltype(*InputParser::ParserOutput{}.cbegin()))> f ) noexcept;
+		virtual ~DefaultProcessor() noexcept override = default;
 
 		virtual void process( InputParser::ParserOutput input, Catalog& catalog ) override;
 
+		private:
+			std::function<void(decltype(*InputParser::ParserOutput{}.cbegin()))> _error_handler;
 	};
 }

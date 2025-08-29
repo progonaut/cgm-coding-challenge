@@ -5,12 +5,16 @@
 #include "util.h"
 
 namespace cgm {
-DefaultProcessor::DefaultProcessor( ) {}
-DefaultProcessor::~DefaultProcessor( ) {}
-
 namespace {
-	void processError( decltype( *InputParser::ParserOutput{ }.cbegin( ) ) const &error_token );
+	void processError( decltype( *InputParser::ParserOutput{ }.cbegin( ) )  error_token );
 }
+
+DefaultProcessor::DefaultProcessor( ) noexcept
+: _error_handler{processError}{}
+
+
+DefaultProcessor::DefaultProcessor( std::function<void(decltype(*InputParser::ParserOutput{}.cbegin()) )> f ) noexcept
+: _error_handler{f}{ }
 
 void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalog ) {
 	for( auto it = input.begin( ); it != input.end( ); ) {
@@ -18,7 +22,7 @@ void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalo
 
 		switch( token.first ) {
 			case InputParser::ParserTokenType::Error: {
-				processError( token );
+				_error_handler( token );
 				it = input.end( );  //< processError might throw in the future; for now, end the loop
 			} break;
 			case InputParser::ParserTokenType::Query: {
@@ -29,7 +33,7 @@ void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalo
 					throw std::runtime_error( util::buildString( "Illegal state: QUERY without QUESTION." ) );
 				}
 
-				auto answers = catalog.getAnswersFor( expect_question->second );
+				auto answers = catalog.getAnswersFor( Question{expect_question->second,{}} );
 				for( auto const &a : answers ) {
 					std::cout << "* " << a << "\n";
 				}
@@ -75,7 +79,7 @@ void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalo
 }
 
 namespace {
-	void processError( decltype( *InputParser::ParserOutput{ }.cbegin( ) ) const &error_token ) {
+	void processError( decltype( *InputParser::ParserOutput{ }.cbegin( ) ) error_token ) {
 		std::cerr << "Illegal input: " << error_token.second << std::endl;
 	}
 }  // namespace

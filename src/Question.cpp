@@ -6,10 +6,14 @@ namespace cgm {
 Question::Question( std::string question_text, AnswerSet answers, std::size_t max_size, bool allow_empty )
     : _question_text{ std::move( question_text ) }, _answers{ std::move( answers ) }, _max_size_of_text{ max_size } {
 	if( !allow_empty  && _answers.size() == 0 ) {
-		throw std::invalid_argument( util::buildString("Question '", question_text, "' has an empty answer set, but every question has to have at least one answer."));
+		throw std::invalid_argument( util::buildString("Question '", _question_text, "' has an empty answer set, but every question has to have at least one answer."));
 	}
 
 	checkLengthInvariant( );
+
+	if( !_question_text.ends_with("?") ) {
+		throw std::invalid_argument( util::buildString("Question '", _question_text, "' does not end with '?'.") );
+	}
 }
 
 void Question::checkLengthInvariant( ) const {

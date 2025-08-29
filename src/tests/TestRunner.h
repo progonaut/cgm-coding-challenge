@@ -27,12 +27,12 @@ class TestRunner {
 		return runner;
 	}
 
-	TestRunner &addTest( Test &t ) {
+	inline TestRunner &addTest( Test &t ) {
 		_tests.push_back( &t );
 		return *this;
 	}
 
-	void run( ) noexcept try {
+	inline void run( ) noexcept try {
 		std::size_t count_failure{0}, count_ok{0}, ignored_meta{0};
 
 		std::cout << "Running " << _tests.size( ) << " tests." << std::endl;
@@ -58,11 +58,12 @@ class TestRunner {
 
 
 		for( auto const &r : collected_results ) {
-			std::cout << std::setw( 40 ) << std::left << util::buildString( "TEST(", r.first, ") " ) << std::setw( 8 )
+			std::cout << std::setw( 80 ) << (cgm::verbose?std::left:std::right) << util::buildString( "TEST(", r.first, ") " ) << std::setw( 8 )
 			          << ( r.second.first ? "OK" : "FAILED" );
 			if( r.second.second != "" && cgm::verbose ) {
 				std::cout << "\n\t - " << r.second.second;
 			}
+			if( cgm::verbose ) std::cout << "\n";
 			std::cout << std::endl;
 		}
 	} catch( std::exception const &e ) {

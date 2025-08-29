@@ -1,5 +1,5 @@
-CXX=g++
-LN=g++
+CXX=clang++
+LN=clang++
 
 SRCD=../src
 BIND=../bin

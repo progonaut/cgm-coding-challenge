@@ -2,7 +2,7 @@
 
 ## Minutiae
 
-* Matthias Wagner (wagner.matthias@gmx.at)
+* Matthias Wagner
 * 2025-08-29
 
 ## Purpose

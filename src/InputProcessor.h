@@ -8,12 +8,14 @@
 
 #include"InputParser.h"
 #include"Catalog.h"
+#include<iostream>
+
 namespace cgm {
 	class InputProcessor {
 		public:
 		virtual ~InputProcessor() noexcept = 0;
 
 
-		virtual void process( InputParser::ParserOutput input, Catalog& catalog ) = 0;
+		virtual void process( InputParser::ParserOutput input, Catalog& catalog, std::ostream& output = std::cout  ) = 0;
 	};
 }

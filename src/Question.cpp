@@ -1,18 +1,19 @@
 #include "Question.h"
 
-#include "util.h"
+
+#include<format>
 
 namespace cgm {
 Question::Question( std::string question_text, AnswerSet answers, std::size_t max_size, bool allow_empty )
     : _question_text{ std::move( question_text ) }, _answers{ std::move( answers ) }, _max_size_of_text{ max_size } {
 	if( !allow_empty  && _answers.size() == 0 ) {
-		throw std::invalid_argument( util::buildString("Question '", _question_text, "' has an empty answer set, but every question has to have at least one answer."));
+		throw std::invalid_argument( std::format("Question '{}' has an empty answer set, but every question has to have at least one.", _question_text) );
 	}
 
 	checkLengthInvariant( );
 
 	if( !_question_text.ends_with("?") ) {
-		throw std::invalid_argument( util::buildString("Question '", _question_text, "' does not end with '?'.") );
+		throw std::invalid_argument( std::format("Question '{} does not end with '?'.", _question_text ));
 	}
 }
 
@@ -24,14 +25,13 @@ void Question::checkLengthInvariant( ) const {
 
 	if( _question_text.length( ) > _max_size_of_text ) {
 		throw TooLongException(
-		  util::buildString(
-		    " Including the mandatory final '?', a question may not exceed ",
-		    _max_size_of_text,
-		    " characters in length."
+				std::format(
+		    " Including the mandatory final '?', a question may not exceed {} characters in length",
+		    _max_size_of_text )
 #if defined(DEBUG)
-			, " [", _question_text, "]"
+			+ " [" + _question_text + "]"
 #endif
-			) );
+			);
 	}
 
 	for( auto const &answer : _answers ) {
@@ -41,7 +41,7 @@ void Question::checkLengthInvariant( ) const {
 
 		if( answer.length( ) > _max_size_of_text ) {
 			throw TooLongException(
-			  util::buildString( " An answer may not exceed ", _max_size_of_text, " characters in length." ) );
+			  std::format( " An answer may not exceed {} characters in length.", _max_size_of_text ) );
 		}
 	}
 }

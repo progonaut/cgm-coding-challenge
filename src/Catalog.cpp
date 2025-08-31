@@ -2,10 +2,10 @@
 
 #include <algorithm>
 
-#include "util.h"
 #include"globals.h"
 
 #include<iostream>
+#include<format>
 
 namespace cgm {
 
@@ -61,7 +61,7 @@ Catalog::addQuestion(
 	auto [position, inserted] = _questions.insert( std::move(question) );
 
 	if( !inserted ) {
-		throw std::runtime_error( util::buildString( "Unable to add question to catalog." ) );
+		throw std::runtime_error(  "Unable to add question to catalog." );
 	}
 
 	return std::make_tuple(

@@ -10,8 +10,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
-
-#include "../util.h"
+#include<format>
 
 #define TEST( NAME ) cgm::Test* T__##NAME##__ = &(*(new cgm::Test{#NAME})).set([]() -> std::pair<bool, std::string>
 // cgm::Test T__NAME__ =
@@ -36,32 +35,27 @@ class Test {
 				auto result = oldF( );
 				return {
 				  false,
-				  util::buildString( 
-				    "expected exception of type '",
-				    typeid( T ).name( ),
-				    "', but test returned (",
+
+				  std::format("expected exception of type '{}', but test returned ({} '{}')",
+						  typeid( T ).name( ),
 				    ( result.first ? "PASS" : "FAIL" ),
-				    ", ",
-				    result.second,
-				    ")!" ) };
+				    result.second
+				     )};
 			} catch( T const &expected_exception ) {
 				return {
 				  true,
-				  util::buildString(
-				    "caught exception of type '",
+					  std::format("caught exception of type '{}': {}",
 				    typeid( T ).name( ),
-				    "': ",
-				    expected_exception.what( ),
-				    "." ) };
+				    expected_exception.what( )
+				    ) };
 			} catch( std::exception const &unexpected ) {
 				return {
 				  false,
-				  util::buildString(
-				    "expected exception of type '",
+				  std::format("expected exception of type '{}', but caught different exception of type '{}': {}:",
 				    typeid( T ).name( ),
-				    "', but a different exception was caught: ",
-				    unexpected.what( ),
-				    "!" ) };
+					typeid( unexpected ).name(),
+				    unexpected.what( )
+				    ) };
 			}
 		};
 		return *this;
@@ -78,7 +72,7 @@ class Test {
 		try {
 			return _f( );
 		} catch( std::exception const &e ) {
-			return { false, util::buildString( "caught unexpected exception: ", e.what( ), "!" ) };
+			return { false, std::format("caught unexpected exception of type '{}': {}", typeid(e).name(), e.what( ) ) };
 		}
 	}
 

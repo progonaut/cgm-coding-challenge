@@ -52,9 +52,9 @@ Examples:
 #include <numeric>  //< for accumulate
 #include <string>
 #include <vector>
+#include<format>
 
 #include "globals.h"
-#include "util.h"
 
 #include "DefaultInput.h"
 #include "DefaultParser.h"
@@ -106,7 +106,7 @@ int main( int argc, char **argv ) {
 					usage( argv[0] );
 					return 0;
 				} else {
-					throw std::invalid_argument( cgm::util::buildString( "Argument '", parameter, "' unknown." ) );
+					throw std::invalid_argument( std::format( "Argument '{}' unkown.", parameter ) );
 				}
 			} else {
 				break;

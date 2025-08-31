@@ -1,8 +1,7 @@
 #include "DefaultProcessor.h"
 
-#include <iostream>
+#include<format>
 
-#include "util.h"
 
 namespace cgm {
 
@@ -31,7 +30,7 @@ void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalo
 				if(
 				  expect_question == input.end( )
 				  || expect_question->first != InputParser::ParserTokenType::Question ) {
-					throw std::runtime_error( util::buildString( "Illegal state: QUERY without QUESTION." ) );
+					throw std::runtime_error(  "Illegal state: QUERY without QUESTION." );
 				}
 
 				auto answers = catalog.getAnswersFor( Question{expect_question->second,{}} );
@@ -47,7 +46,7 @@ void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalo
 				if(
 				  expect_question == input.end( )
 				  || expect_question->first != InputParser::ParserTokenType::Question ) {
-					throw std::runtime_error( util::buildString( "Illegal state: DEFINITION without QUESTION." ) );
+					throw std::runtime_error( "Illegal state: DEFINITION without QUESTION." );
 				}
 
 				std::string question_text = expect_question->second;
@@ -74,7 +73,7 @@ void DefaultProcessor::process( InputParser::ParserOutput input, Catalog &catalo
 			default: {
 				throw std::runtime_error(
 
-				  util::buildString( "Illegal state with TYPE ", std::size_t(token.first) , "(", token.second, ")" ) );
+				  std::format( "Illegal state with type/id {} ('{}').", std::size_t(token.first) , token.second ) );
 			} break;
 		}
 	}

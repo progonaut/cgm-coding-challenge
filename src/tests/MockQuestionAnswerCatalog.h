@@ -17,7 +17,8 @@
 #include "../InputProvider.h"
 
 #include "BadTestInput.h"
-#include"../util.h"
+
+#include<format>
 
 namespace cgm {
 
@@ -80,11 +81,10 @@ class MockQuestionAnswerCatalog<BadTestInput> {
 		}
 
 		if( error ) {
-			throw std::invalid_argument{ util::buildString("Integration test with bad input failed when testing input '", input, "': Expected ", 
-					(_input.getResultFor(input) == BadTestInput::Result::Fail? "FAIL":"PASS")
-					, ", but got ",
+			throw std::invalid_argument{ std::format("Integration test with bad input failed when testing input '{}'; expected {}, but got {}!", input,
+					(_input.getResultFor(input) == BadTestInput::Result::Fail? "FAIL":"PASS"),
 					(_input.getResultFor(input) != BadTestInput::Result::Fail? "FAIL":"PASS")
-					) };
+					)};
 		}
 	}
 

@@ -17,6 +17,7 @@
 #include "../InputProvider.h"
 
 #include "BadTestInput.h"
+#include "TestRunner.h"
 
 #include<format>
 
@@ -31,8 +32,9 @@ class MockQuestionAnswerCatalog {
 	    : _input{ input_provider }, _parser{ input_parser }, _processor{ input_processor }, _catalog{ catalog } {}
 
 	void execute( ) {
+		cgm::TestNullStream blind_output;
 		while( !_input.eof( ) ) {
-			_processor.process( _parser.parse( _input.getLine( ) ), _catalog );
+			_processor.process( _parser.parse( _input.getLine( )), _catalog, blind_output );
 		}
 	}
 
@@ -65,10 +67,13 @@ class MockQuestionAnswerCatalog<BadTestInput> {
 	void execute( ) {
 		bool error{false};
 		std::string input;
+
+		cgm::TestNullStream blind_output;
+
 		while( !_input.eof( ) && !error) {
 			try {
 				input = _input.getLine();
-				_processor.process( _parser.parse( input  ), _catalog );
+				_processor.process( _parser.parse( input  ), _catalog, blind_output );
 
 				if( _input.getResultFor( input ) != BadTestInput::Result::Pass ) {
 					error = true;

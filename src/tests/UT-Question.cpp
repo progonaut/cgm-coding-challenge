@@ -13,12 +13,12 @@
 TEST(Q_length_10__1_answer) {
 	cgm::Question q{"123456789?", {"Answer1234"}};
 	return { q.getQuestionText() == "123456789?" && q.getAnswers().size() == 1 && *(q.getAnswers().begin()) == "Answer1234", ""};
-} NOEXCEPT;
+} PASS;
 
 TEST(Q_length_10__no_answer) {
 	cgm::Question q{"123456789?", {}};
 	return { q.getQuestionText() == "123456789?" && q.getAnswers().size() == 0, ""};
-} NOEXCEPT;
+} PASS;
 
 TEST(Q_length_10__no_answer_NEG) {
 	cgm::Question q{"123456789?", {}, MAX_LENGTH, false};
@@ -34,7 +34,7 @@ TEST(Q_length_30__too_long) {
 TEST(Q_length_20__edge_case) {
 	cgm::Question q{"123456789?123456789?", {}};
 	return { q.getQuestionText().length() == 20, "" };
-} NOEXCEPT;
+} PASS;
 
 TEST(Q_length_21__too_long) {
 	cgm::Question q{"123456789?123456789?1?", {}};
@@ -51,11 +51,11 @@ TEST(Q_Comparison_equality) {
 	cgm::Question q2{"Q1?", {"A1"}};
 
 	return { cgm::Question::AnswerAgnosticComparator(q1,q2) == cgm::Question::AnswerAgnosticComparator(q2,q1), "" };
-} NOEXCEPT;
+} PASS;
 
 TEST(Q_Comparison_equality_unequal) {
 	cgm::Question q1{"Q1?", {}};
 	cgm::Question q2{"Q2?", {"A1"}};
 
 	return { cgm::Question::AnswerAgnosticComparator(q1,q2) != cgm::Question::AnswerAgnosticComparator(q2,q1), "" };
-} NOEXCEPT;
+} PASS;

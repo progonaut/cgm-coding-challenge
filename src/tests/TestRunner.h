@@ -10,11 +10,23 @@
 #include <vector>
 #include<format>
 
-#include "Test.h"
 #include "../globals.h"
 
-
+#include<ostream>
 namespace cgm {
+class Test;
+
+class TestNullStream : public std::ostream {
+	public:
+		inline TestNullStream() : std::ostream{nullptr} {}
+		inline TestNullStream( TestNullStream const& ) : std::ostream{nullptr} { }
+};
+
+template<typename T>
+TestNullStream& operator<<( TestNullStream& stream, T const& v ) {
+	return stream;
+}
+
 class TestRunner {
 	TestRunner( TestRunner const & ) = delete;
 	TestRunner( TestRunner && )      = delete;
@@ -24,6 +36,7 @@ class TestRunner {
 	static TestRunner &get( ) noexcept;
 
 	TestRunner &addTest( Test &t );
+	TestRunner &delTest( Test &t );
 
 	void run( ) noexcept;
 

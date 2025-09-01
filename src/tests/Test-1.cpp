@@ -9,11 +9,11 @@
 
 TEST(_META_TEST_________PASS) {
 	return {true, "This should pass."};
-} NOEXCEPT;
+} PASS;
 
 TEST(_META_TEST_FAILURE_FAIL) {
 	return {false, "This shouldn't pass."};
-} NOEXCEPT;
+} PASS;
 
 TEST(_META_TEST_EXC_____PASS) {
 	throw std::logic_error{"This is expected (PASS)"};
@@ -31,6 +31,6 @@ TEST(_META_NO_EXC_______FAIL) {
 
 TEST(_META_MAX_LENGTH___PASS) {
 	return { MAX_LENGTH == 20, "Many tests assume MAX_LENGTH to be 20." };
-} NOEXCEPT;
+} PASS;
 
 //EXCEPT(std::length_error)

@@ -15,20 +15,20 @@ TEST(C_ADD_QUESTION_AND_QUERY) {
 
 	c.addQuestion("Q1?", {"A1","A2"} );
 	return { c.getAnswersFor( "Q1?").size() == 2, ""};
-} NOEXCEPT
+} PASS;
 
 TEST(C_QUERY_EMPTY) {
 	cgm::Catalog c;
 
 	return { c.getAnswersFor( "Q1?").size() == 1 && c.getAnswersFor("Q1?").begin()->starts_with("the answer to life, universe"), ""};
-} NOEXCEPT
+} PASS;
 
 TEST(C_QUERY_NOT_FOUND) {
 	cgm::Catalog c;
 
 	c.addQuestion("Q1?", {"A1","A2"} );
 	return { c.getAnswersFor( "Q2?").size() == 1 && c.getAnswersFor("Q2?").begin()->starts_with("the answer to life, universe"), ""};
-} NOEXCEPT
+} PASS;
 
 TEST(C_QUERY_MULTIPLE) {
 	cgm::Catalog c;
@@ -36,7 +36,7 @@ TEST(C_QUERY_MULTIPLE) {
 	c.addQuestion("Q1?", {"A1","A2"} );
 	c.addQuestion("Q2?", {"A1","A2", "A3"} );
 	return { c.getAnswersFor( "Q2?").size() == 3 && c.getAnswersFor("Q1?").size() == 2, "" };
-} NOEXCEPT
+} PASS;
 
 TEST(C_ADD_MERGE_3 ) {
 	cgm::Catalog c;
@@ -49,7 +49,7 @@ TEST(C_ADD_MERGE_3 ) {
 		&& new_or_changed == cgm::Catalog::NewOrChanged::Changed
 		&& nr == 1
 		, "" };
-} NOEXCEPT
+} PASS;
 
 TEST(C_ADD_REPLACE_3 ) {
 	cgm::Catalog c;
@@ -62,7 +62,7 @@ TEST(C_ADD_REPLACE_3 ) {
 		&& new_or_changed == cgm::Catalog::NewOrChanged::Changed
 		&& nr == 3
 		, "" };
-} NOEXCEPT
+} PASS;
 
 TEST(C_ADD_MERGE_QUESTION_NO_ANS ) {
 	cgm::Catalog c;
@@ -116,4 +116,4 @@ TEST(C_ADD_MERGE_NON_UNIQUE) {
 		&& new_or_changed == cgm::Catalog::NewOrChanged::Changed
 		&& nr == 3
 		, "" };
-} NOEXCEPT;
+} PASS;

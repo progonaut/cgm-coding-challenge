@@ -6,80 +6,89 @@
  * A simple test class for a home-spun tiny test framework
  */
 
+#include <format>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
-#include<format>
+#include<ostream>
+#include"TestRunner.h"
 
-#define TEST( NAME ) cgm::Test* T__##NAME##__ = &(*(new cgm::Test{#NAME})).set([]() -> std::pair<bool, std::string>
-// cgm::Test T__NAME__ =
-#define EXCEPT( EXCNAME ) ).expect<EXCNAME>();
-#define EXPECT( EXCNAME ) ).expect<EXCNAME>();
-#define NOEXCEPT );
+#define TEST( NAME )      cgm::Test T__##NAME##__ = cgm::Test(#NAME, []( std::ostream& output ) -> std::pair<bool, std::string>
+#define EXPECT( EXCNAME ) ).expect<EXCNAME>( )
+#define PASS ).noexpect()
 
 namespace cgm {
 class Test {
   public:
-	Test( std::string name );
-	inline Test( Test const &rhs ) noexcept = delete;
-	Test( Test && ) noexcept                = delete;
+	inline Test( std::string name, std::function<std::pair<bool, std::string>( std::ostream& )> f )
+	    : _name{ name }, _f{ f } {}
+
+	inline Test( Test const &rhs ) noexcept :_name{rhs._name}, _f{ rhs._f} {
+#if defined( RUNTESTS )
+		TestRunner::get( ).addTest( *this );
+#endif
+	}
+
+	Test( Test && ) noexcept         = delete;
+
+	inline ~Test() {
+#if defined( RUNTESTS )
+		TestRunner::get( ).delTest( *this );
+#endif
+	}
+		
 
 	template<typename T>
 	    requires std::is_base_of_v<std::exception, T>
 	inline Test &expect( ) {
 		auto oldF = _f;
 
-		_f = [oldF ]( ) -> std::pair<bool, std::string> {
+		_f = [oldF]( std::ostream& output ) -> std::pair<bool, std::string> {
 			try {
-				auto result = oldF( );
+				auto result = oldF( output );
 				return {
 				  false,
 
-				  std::format("expected exception of type '{}', but test returned ({} '{}')",
-						  typeid( T ).name( ),
+				  std::format(
+				    "expected exception of type '{}', but test returned ({} '{}')",
+				    typeid( T ).name( ),
 				    ( result.first ? "PASS" : "FAIL" ),
-				    result.second
-				     )};
+				    result.second ) };
 			} catch( T const &expected_exception ) {
 				return {
 				  true,
-					  std::format("caught exception of type '{}': {}",
-				    typeid( T ).name( ),
-				    expected_exception.what( )
-				    ) };
+				  std::format( "caught exception of type '{}': {}", typeid( T ).name( ), expected_exception.what( ) ) };
 			} catch( std::exception const &unexpected ) {
 				return {
 				  false,
-				  std::format("expected exception of type '{}', but caught different exception of type '{}': {}:",
+				  std::format(
+				    "expected exception of type '{}', but caught different exception of type '{}': {}:",
 				    typeid( T ).name( ),
-					typeid( unexpected ).name(),
-				    unexpected.what( )
-				    ) };
+				    typeid( unexpected ).name( ),
+				    unexpected.what( ) ) };
 			}
 		};
 		return *this;
 	}
 
-	template<typename F>
-	    requires std::is_invocable_v<F>
-	inline Test &set( F f ) {
-		_f = f;
+	inline Test& noexpect() noexcept {
 		return *this;
 	}
 
-	inline std::pair<bool, std::string> run( ) const noexcept {
+	inline std::pair<bool, std::string> run( std::ostream& output ) const noexcept {
 		try {
-			return _f( );
+			return _f( output );
 		} catch( std::exception const &e ) {
-			return { false, std::format("caught unexpected exception of type '{}': {}", typeid(e).name(), e.what( ) ) };
+			return {
+			  false, std::format( "caught unexpected exception of type '{}': {}", typeid( e ).name( ), e.what( ) ) };
 		}
 	}
 
-	inline std::string getName( ) const noexcept { return _name; }
+	inline std::string getName( ) const { return _name; }
 
   private:
 	std::string _name;
-	std::function<std::pair<bool, std::string>( )> _f;
+	std::function<std::pair<bool, std::string>( std::ostream& )> _f;
 };
 }  // namespace cgm

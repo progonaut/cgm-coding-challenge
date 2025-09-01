@@ -26,4 +26,4 @@ TEST(IT_GOOD_RANDOM_INPUT) {
 
 	cgm::MockQuestionAnswerCatalog{ catalog,input_provider, input_parser, input_processor }.execute();
 	return {true, std::format("Completed {} inputs without error.", TRIES)};
-} NOEXCEPT
+} PASS;

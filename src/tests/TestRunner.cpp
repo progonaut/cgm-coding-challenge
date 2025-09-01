@@ -4,6 +4,8 @@
 #include <iostream>
 #include<cstddef>
 
+#include"Test.h"
+
 #if defined( RUNTESTS )
 namespace cgm {
 	TestRunner &TestRunner::get( ) noexcept {
@@ -11,19 +13,27 @@ namespace cgm {
 		return runner;
 	}
 
-	inline TestRunner &TestRunner::addTest( Test &t ) {
+	TestRunner &TestRunner::addTest( Test &t ) {
 		_tests.push_back( &t );
 		return *this;
 	}
 
-	inline void TestRunner::run( ) noexcept try {
+	TestRunner &TestRunner::delTest( Test &t ) {
+		auto tp = &t;
+		std::remove( _tests.begin(), _tests.end(), tp );
+		return *this;
+	}
+
+	void TestRunner::run( ) noexcept try {
 		std::size_t count_failure{0}, count_ok{0}, ignored_meta{0};
 
 		std::cout << "Running " << _tests.size( ) << " tests." << std::endl;
 		std::vector<std::pair<std::string, std::pair<bool, std::string>>> collected_results;
+
+		TestNullStream blind_output;
 		for( auto &t : _tests ) {
 			std::cout << "[" << t->getName( ) << "]" << std::endl;
-			auto test_result = std::make_pair( t->getName( ), t->run( )); 
+			auto test_result = std::make_pair( t->getName( ), t->run( blind_output )); 
 			if( !test_result.first.starts_with("_META_") ) {
 				if( test_result.second.first ) count_ok++;	
 				else count_failure++;
@@ -53,11 +63,7 @@ namespace cgm {
 	} catch( std::exception const &e ) {
 		std::cerr << "TEST RUNNER CRITICAL FAILURE: Exception broke through guard: " << e.what( ) << "! Aborting ..."
 		          << std::endl;
-		std::exit( 66 );
+		throw;
 	}
-
-  private:
-	std::vector<Test *> _tests;
-	inline TestRunner( ) {};
-};
+}
 #endif
